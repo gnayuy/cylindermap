@@ -232,23 +232,23 @@ int initObject(int w, int h)
 //    };
     
     // ex: a rectangle
-//    GLfloat points[] = {
-//        -0.1, -0.65, 0.0f,
-//        -0.03, -0.65, 0.0f,
-//        -0.03, 0.65, 0.0f,
-//        -0.03, 0.65, 0.0f,
-//        -0.1,  0.65, 0.0f,
-//        -0.1, -0.65, 0.0f
-//    };
-    
     GLfloat points[] = {
-        -0.3, -0.65, 0.0f,
-        -0.25, -0.65, 0.0f,
-        -0.25, 0.65, 0.0f,
-        -0.25, 0.65, 0.0f,
-        -0.3,  0.65, 0.0f,
-        -0.3, -0.65, 0.0f
+        -0.1, -0.65, 0.0f,
+        -0.03, -0.65, 0.0f,
+        -0.03, 0.65, 0.0f,
+        -0.03, 0.65, 0.0f,
+        -0.1,  0.65, 0.0f,
+        -0.1, -0.65, 0.0f
     };
+    
+//    GLfloat points[] = {
+//        -0.3, -0.65, 0.0f,
+//        -0.25, -0.65, 0.0f,
+//        -0.25, 0.65, 0.0f,
+//        -0.25, 0.65, 0.0f,
+//        -0.3,  0.65, 0.0f,
+//        -0.3, -0.65, 0.0f
+//    };
     
     //
     glGenBuffers(1, &vbo);
@@ -364,6 +364,54 @@ int initCheckerboard(int w, int h, int step)
     
     
     initTextureRGB(w,h,&textures[PJTEX],p);
+    return 0;
+}
+
+int movingObj(int w, int h, GLfloat* points, float istep)
+{
+    //
+    for(int i=0; i<18; i+=3)
+        points[i] -= istep;
+    
+    //
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+    
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    
+    //
+    vs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs, 1, &vertex_shader, NULL);
+    glCompileShader(vs);
+    if(check_shader_compile_status(vs)==false)
+    {
+        std::cout<<"Fail to compile vertex shader"<<std::endl;
+        return -1;
+    }
+    
+    fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &fragment_shader, NULL);
+    glCompileShader(fs);
+    if(check_shader_compile_status(fs)==false)
+    {
+        std::cout<<"Fail to compile fragment shader"<<std::endl;
+        return -1;
+    }
+    
+    //
+    shaderProgram = glCreateProgram ();
+    glAttachShader(shaderProgram, fs);
+    glAttachShader(shaderProgram, vs);
+    glLinkProgram(shaderProgram);
+    
+    //
+    initFramebuffer(w, h, 0, 1, &textures[PJTEX], NULL);
+    
     return 0;
 }
 

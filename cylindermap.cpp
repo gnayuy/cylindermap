@@ -101,14 +101,6 @@ int main(int argc, char *argv[])
     printf ("OpenGL version supported %s\n", version);
     
     //
-    //---- create input images
-    //
-    
-    // define object to render
-    initObject(windowWidth, windowHeight);
-    //initCheckerboard(windowWidth, windowHeight, 32);
-    
-    //
     //---- screen
     //
     
@@ -184,7 +176,29 @@ int main(int argc, char *argv[])
     //initFramebuffer(width, height, 1, 2, &textures[DMTEX], (unsigned char*)deformMat);
     initTextureRG32F(width, height, &textures[DMTEX], deformMat);
     
+    
     //
+    //---- create input images
+    //
+    
+    // define object to render
+    initObject(windowWidth, windowHeight);
+    //initCheckerboard(windowWidth, windowHeight, 32);
+    
+    //
+    GLfloat points[] = {
+        -0.1, -0.65, 0.0f,
+        -0.03, -0.65, 0.0f,
+        -0.03, 0.65, 0.0f,
+        -0.03, 0.65, 0.0f,
+        -0.1,  0.65, 0.0f,
+        -0.1, -0.65, 0.0f
+    };
+    
+    float istep = 0.0001;
+    int count = 0, stop = 3000;
+    
+    // render
     double lastTime = glfwGetTime();
     int nbFrames = 0;
     
@@ -198,6 +212,11 @@ int main(int argc, char *argv[])
             nbFrames = 0;
             lastTime += 1.0;
         }
+        
+//        //
+//        count++;
+//        if(count<stop)
+//            movingObj(w,h,points,istep);
         
         //
         glEnable(GL_TEXTURE_2D);
@@ -215,6 +234,10 @@ int main(int argc, char *argv[])
         
         //
         glUseProgram (shaderProgram);
+        
+        // set color vec3 (f1, f2, f3)
+        // gluniform3fv(getUniformLocation(shaderProgram, "color"), color);
+        
         glBindVertexArray (vao);
         glDrawArrays (GL_TRIANGLES, 0, 6);
         
