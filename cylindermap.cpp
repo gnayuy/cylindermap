@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
     //
     int windowWidth = w;
     int windowHeight = h;
-    glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+    //glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+    
+    printf("win size: [%d, %d], framebuffer size: [%d, %d]\n", w,h, windowWidth, windowHeight);
     
     // Initialize GLEW
     glewExperimental = GL_TRUE;
