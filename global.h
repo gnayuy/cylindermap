@@ -236,8 +236,10 @@ void init_ss_quad ()
 }
 
 //
-int initObject(int w, int h, int nTex)
+int initObject(int w, int h)
 {
+    // texture range [-1,1]
+    
     // ex: a triangle
 //    GLfloat points[] = {
 //        0.0f,	0.5f,	0.0f,
@@ -316,7 +318,7 @@ int initObject(int w, int h, int nTex)
     glLinkProgram(shaderProgram);
     
     //
-    initFramebuffer(w, h, 0, 1, &textures[nTex], NULL);
+    //initFramebuffer(w, h, 0, 1, &textures[nTex], NULL);
     
     return 0;
 }

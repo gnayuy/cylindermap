@@ -4,6 +4,12 @@
 // compile on Mac
 // g++ -std=c++11 -o cylindermap cylindermap.cpp -framework OpenGL -lGLEW -lglfw -lglbinding
 
+// NOTE:
+// texture 0, 1, 2 for r,g,b frames
+// texture 3 for deformation matrix (transformation)
+//
+
+//
 #include "global.h"
 
 // main func
@@ -197,21 +203,15 @@ int main(int argc, char *argv[])
     //
     
     // define object to render
-    initObject(windowWidth, windowHeight, 0);
-    //initCheckerboard(windowWidth, windowHeight, 32);
+    initObject(windowWidth, windowHeight);
+    //initCheckerboard(windowWidth, windowHeight, 32, 0);
     
     //
-    GLfloat points[] = {
-        -0.1, -0.65, 0.0f,
-        -0.03, -0.65, 0.0f,
-        -0.03, 0.65, 0.0f,
-        -0.03, 0.65, 0.0f,
-        -0.1,  0.65, 0.0f,
-        -0.1, -0.65, 0.0f
-    };
-    
     float istep = 0.0001;
-    int count = 0, stop = 3000;
+    int count = 0, n = 3000;
+    
+    bool *stimuli = stimulation(n);
+    
     
     // render
     double lastTime = glfwGetTime();
@@ -228,10 +228,15 @@ int main(int argc, char *argv[])
             lastTime += 1.0;
         }
         
-//        //
-//        count++;
-//        if(count<stop)
-//            movingObj(w,h,points,istep);
+        // translate test
+        
+        if(count<n)
+        {
+            viewMatrix = glm::translate(viewMatrix, glm::vec3(-0.1f, 0.0f, 0.0f));
+            count++;
+        }
+        mvp = projectionMatrix * viewMatrix * modelMatrix;
+        initFramebuffer(w, h, 0, 1, &textures[0], NULL);
         
         //
         glEnable(GL_TEXTURE_2D);
