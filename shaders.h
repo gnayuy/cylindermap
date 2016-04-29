@@ -21,10 +21,9 @@ const char* vertex_shader =
 
 const char* fragment_shader =
 "#version 410 \n"
-"uniform vec3 color;"
 "out vec4 fragColor;"
 "void main () {"
-"	fragColor = vec4 (color, 1.0);"
+"	fragColor = vec4 (1.0, 0.0, 0.0, 1.0);"
 "}";
 
 //
@@ -40,10 +39,15 @@ const char* post_vertex_shader =
 const char* post_fragment_shader =
 "#version 410 \n"
 "in vec2 st;"
-"uniform sampler2D tex;"
+"uniform sampler2D tex0;"
+"uniform sampler2D tex1;"
+"uniform sampler2D tex2;"
 "out vec4 fragColor;"
 "void main () {"
-"    fragColor = texture (tex, st);"
+"    vec4  color1 = texture (tex0, st);"
+"    vec4  color2 = texture (tex1, st);"
+"    vec4  color3 = texture (tex2, st);"
+"    fragColor = vec4(color1.r, color2.r, color3.r, 1.0);"
 "}";
 
 // warp

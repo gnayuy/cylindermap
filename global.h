@@ -94,8 +94,18 @@ bool* stimulation(int n)
     std::default_random_engine generator;
     std::bernoulli_distribution distribution(0.5);
     
-    for (int i=0; i<n; ++i)
-        p[i] = distribution(generator);
+//    for (int i=0; i<n; ++i)
+//        p[i] = distribution(generator);
+    
+    
+    for(int i=0; i<n; ++i)
+        p[i] = 0;
+    
+    for(int i=n/4; i<n/2; ++i)
+        p[i] = 1;
+    
+    for(int i=3*n/4; i<n; ++i)
+        p[i] = 1;
     
     return p;
 }

@@ -207,16 +207,20 @@ int main(int argc, char *argv[])
     //initCheckerboard(windowWidth, windowHeight, 32, 0);
     
     //
-    float istep = 0.0001;
-    int count = 0, n = 3000;
-    
+    float xtranslate = -0.1f;
+    int count = 0, n = 300;
     bool *stimuli = stimulation(n);
-    
     
     // render
     double lastTime = glfwGetTime();
     int nbFrames = 0;
     
+    //
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    
+    //
     while(!glfwWindowShouldClose(window))
     {
         // FPS
@@ -228,41 +232,49 @@ int main(int argc, char *argv[])
             lastTime += 1.0;
         }
         
-        // translate test
-        
-        if(count<n)
-        {
-            viewMatrix = glm::translate(viewMatrix, glm::vec3(-0.1f, 0.0f, 0.0f));
-            count++;
-        }
-        mvp = projectionMatrix * viewMatrix * modelMatrix;
-        initFramebuffer(w, h, 0, 1, &textures[0], NULL);
-        
-        //
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        //glEnable(GL_CULL_FACE);
-        
-        // 1st pass: render to a texture
-        glBindFramebuffer (GL_FRAMEBUFFER, fb[0]);
-        glViewport(0, 0, windowWidth, windowHeight);
-        
-        //
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 1st pass: render to a RGB texture
         
         //
         glUseProgram (shaderProgram);
         
-        //
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+        // RGB-CHANNEL
+        for(int c=0; c<3; c++)
+        {
+            if(count<n)
+            {
+                // IF
+                // performs the scaling FIRST, and THEN the rotation, and THEN the translation
+                // THEN
+                // TransformedVector = TranslationMatrix * RotationMatrix * ScaleMatrix * OriginalVector;
+                
+                if(count>1)
+                {
+                    if(stimuli[count]!=stimuli[count-1])
+                        viewMatrix = glm::rotate(viewMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
+                }
+                viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
+                count++;
+            }
+            mvp = projectionMatrix * viewMatrix * modelMatrix;
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+            
+            std::cout<<count<<" "<<glm::to_string(mvp*vec4(100, 1000, 0.0, 1.0))<<std::endl;
+            
+            //
+            initFramebuffer(w, h, 0, 1, &textures[c], NULL);
+            
+            glBindFramebuffer (GL_FRAMEBUFFER, fb[c]);
+            glViewport(0, 0, windowWidth, windowHeight);
+            
+            //
+            glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+            glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            glBindVertexArray (vao);
+            glDrawArrays (GL_TRIANGLES, 0, 6);
+        }
         
-        // set color vec3 (f1, f2, f3)
-        // gluniform3fv(getUniformLocation(shaderProgram, "color"), color);
-        
-        glBindVertexArray (vao);
-        glDrawArrays (GL_TRIANGLES, 0, 6);
         
         // 2nd pass: render to screen
         if(b_debug)
@@ -275,8 +287,12 @@ int main(int argc, char *argv[])
             //
             glUseProgram(postsp);
             
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textures[0]);
+            //
+            for(int c=0; c<3; c++)
+            {
+                glActiveTexture(GL_TEXTURE0+c);
+                glBindTexture(GL_TEXTURE_2D, textures[c]);
+            }
             
             glBindVertexArray (g_ss_quad_vao);
             glDrawArrays (GL_TRIANGLES, 0, 6);
