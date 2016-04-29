@@ -19,13 +19,11 @@ using namespace glm;
 
 #include "shaders.h"
 
-//
-GLuint fb[2] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()}; //framebuffers
-GLuint rb[2] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()}; //renderbuffers, color and depth
-GLuint textures[2] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
-
-const int PJTEX = 0; // project texture
-const int DMTEX = 1; // deformation texture
+// framebuffer, renderbuffer for color and depth, texture
+#define MAXTEX 5
+GLuint fb[MAXTEX] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
+GLuint rb[MAXTEX] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
+GLuint textures[MAXTEX] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
 
 // screen
 GLuint g_ss_quad_vao = 0, g_ss_quad_vbo = 0;
@@ -156,26 +154,21 @@ bool initFramebuffer(int g_gl_width, int g_gl_height, int n, int type, GLuint* t
     
     //
     glGenFramebuffers (1, &fb[n]);
-    glGenTextures (1, tex);
-    glBindTexture (GL_TEXTURE_2D, *tex);
     
     if(type==1)
-        glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, g_gl_width, g_gl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    {
+        initTextureRGB(g_gl_width, g_gl_height, tex, data);
+    }
     else if(type==2)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, g_gl_width, g_gl_height, 0, GL_RG, GL_FLOAT, (float*)data);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    {
+        initTextureRG32F(g_gl_width, g_gl_height, tex, (float*)data);
+    }
     
     //
     glBindFramebuffer (GL_FRAMEBUFFER, fb[n]);
+    glBindTexture (GL_TEXTURE_2D, *tex);
     
-    if(n==0)
-        glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *tex, 0);
-    else if(n==1)
-        glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, *tex, 0);
+    glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+n, GL_TEXTURE_2D, *tex, 0);
     
     //
     glGenRenderbuffers (1, &rb[n]);
@@ -329,7 +322,7 @@ int initObject(int w, int h, int nTex)
 }
 
 //
-int initCheckerboard(int w, int h, int step)
+int initCheckerboard(int w, int h, int step, int nTex)
 {
     int c = 3;
     int size = c*w*h;
@@ -399,7 +392,7 @@ int initCheckerboard(int w, int h, int step)
     //    fclose(fp);
     
     
-    initTextureRGB(w,h,&textures[PJTEX],p);
+    initTextureRGB(w,h,&textures[nTex],p);
     return 0;
 }
 

@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
     float *deformMat = (float*)p;
     
     //initFramebuffer(width, height, 1, 2, &textures[DMTEX], (unsigned char*)deformMat);
-    initTextureRG32F(width, height, &textures[DMTEX], deformMat);
+    initTextureRG32F(width, height, &textures[3], deformMat);
     
     
     //
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
         //glEnable(GL_CULL_FACE);
         
         // 1st pass: render to a texture
-        glBindFramebuffer (GL_FRAMEBUFFER, fb[PJTEX]);
+        glBindFramebuffer (GL_FRAMEBUFFER, fb[0]);
         glViewport(0, 0, windowWidth, windowHeight);
         
         //
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
             glUseProgram(postsp);
             
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textures[PJTEX]);
+            glBindTexture(GL_TEXTURE_2D, textures[0]);
             
             glBindVertexArray (g_ss_quad_vao);
             glDrawArrays (GL_TRIANGLES, 0, 6);
@@ -292,11 +292,11 @@ int main(int argc, char *argv[])
             
             //
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textures[PJTEX]);
+            glBindTexture(GL_TEXTURE_2D, textures[0]);
             glUniform1i(locTex0, 0);
             
             glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, textures[DMTEX]);
+            glBindTexture(GL_TEXTURE_2D, textures[3]);
             glUniform1i(locTex1, 1);
             
             //
