@@ -1,4 +1,7 @@
+// cylindermap
+// Develop by Yang Yu (yuy@janelia.hhmi.org)
 
+// compile on Mac
 // g++ -std=c++11 -o cylindermap cylindermap.cpp -framework OpenGL -lGLEW -lglfw -lglbinding
 
 #include "global.h"
@@ -100,6 +103,18 @@ int main(int argc, char *argv[])
     printf ("Renderer: %s\n", renderer);
     printf ("OpenGL version supported %s\n", version);
     
+    
+    //
+    //---- Model, View, Projection
+    //
+    
+    //
+    glm::mat4 projectionMatrix = glm::ortho(0.0f,(float)w,(float)h,0.0f);
+    glm::mat4 viewMatrix =  glm::mat4(1.0f);
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    
+    glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
+    
     //
     //---- screen
     //
@@ -182,7 +197,7 @@ int main(int argc, char *argv[])
     //
     
     // define object to render
-    initObject(windowWidth, windowHeight);
+    initObject(windowWidth, windowHeight, 0);
     //initCheckerboard(windowWidth, windowHeight, 32);
     
     //
@@ -234,6 +249,9 @@ int main(int argc, char *argv[])
         
         //
         glUseProgram (shaderProgram);
+        
+        //
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
         
         // set color vec3 (f1, f2, f3)
         // gluniform3fv(getUniformLocation(shaderProgram, "color"), color);

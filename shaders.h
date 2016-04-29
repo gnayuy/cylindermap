@@ -7,14 +7,16 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <random>
 using namespace std;
 
 //
 const char* vertex_shader =
 "#version 410 \n"
 "in vec3 vp;"
+"uniform mat4 MVP;"
 "void main () {"
-"	gl_Position = vec4 (vp, 1.0);"
+"	gl_Position = MVP*vec4 (vp, 1.0);"
 "}";
 
 const char* fragment_shader =
