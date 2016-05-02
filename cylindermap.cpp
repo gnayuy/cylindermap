@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
     //
     init_ss_quad();
     
+    GLuint locTex_Debug[3];
     if(b_debug)
     {
         //
@@ -154,6 +155,10 @@ int main(int argc, char *argv[])
         glAttachShader(postsp, postvs);
         glAttachShader(postsp, postfs);
         glLinkProgram(postsp);
+        
+        locTex_Debug[0] = glGetUniformLocation(postsp, "tex0");
+        locTex_Debug[1] = glGetUniformLocation(postsp, "tex1");
+        locTex_Debug[2] = glGetUniformLocation(postsp, "tex2");
     }
     
     //
@@ -189,19 +194,17 @@ int main(int argc, char *argv[])
     GLuint locHeight  = glGetUniformLocation(spDeform, "h");
     
     GLuint locTex[4];
-    
     locTex[0] = glGetUniformLocation(spDeform, "tex0");
     locTex[1] = glGetUniformLocation(spDeform, "tex1");
     locTex[2] = glGetUniformLocation(spDeform, "tex2");
     locTex[3] = glGetUniformLocation(spDeform, "texDeform");
     
-    
     //
     char *p = loadDeform(deformFile);
     float *deformMat = (float*)p;
     
-    //initFramebuffer(width, height, 1, 2, &textures[DMTEX], (unsigned char*)deformMat);
-    initTextureRG32F(width, height, &textures[3], deformMat);
+    initFramebuffer(width, height, 3, 2, &textures[3], (unsigned char*)deformMat);
+    //initTextureRG32F(width, height, &textures[3], deformMat);
     
     
     //
@@ -225,6 +228,11 @@ int main(int argc, char *argv[])
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    
+    //
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,  GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+    glDrawBuffers(4, drawBuffers);
+
     
     //
     while(!glfwWindowShouldClose(window))
@@ -267,7 +275,7 @@ int main(int argc, char *argv[])
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "View"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
             
             //
-            initFramebuffer(w, h, 0, 1, &textures[c], NULL);
+            initFramebuffer(w, h, c, 1, &textures[c], NULL);
             
             glBindFramebuffer (GL_FRAMEBUFFER, fb[c]);
             glViewport(0, 0, windowWidth, windowHeight);
@@ -295,8 +303,9 @@ int main(int argc, char *argv[])
             //
             for(int c=0; c<3; c++)
             {
-                glActiveTexture(GL_TEXTURE0+c);
+                glActiveTexture(GL_TEXTURE0 + c);
                 glBindTexture(GL_TEXTURE_2D, textures[c]);
+                glUniform1i(locTex_Debug[c], c);
             }
             
             glBindVertexArray (g_ss_quad_vao);

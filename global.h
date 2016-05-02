@@ -156,7 +156,7 @@ bool initTextureRG32F(int g_gl_width, int g_gl_height, GLuint* tex, float *data)
 // init a framebuffer
 bool initFramebuffer(int g_gl_width, int g_gl_height, int n, int type, GLuint* tex, unsigned char *data)
 {
-    if(!(n==0 || n==1))
+    if(!(n==0 || n==1 || n==2 || n==3))
     {
         printf("Invalid n\n");
         return false;
@@ -188,8 +188,8 @@ bool initFramebuffer(int g_gl_width, int g_gl_height, int n, int type, GLuint* t
     glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb[n]);
     
     //
-    //    GLenum draw_bufs[] = { GL_COLOR_ATTACHMENT0 };
-    //    glDrawBuffers (1, draw_bufs);
+//    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,  GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+//    glDrawBuffers(4, drawBuffers);
     
     //
     GLenum status = glCheckFramebufferStatus (GL_FRAMEBUFFER);

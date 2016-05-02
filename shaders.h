@@ -48,9 +48,7 @@ const char* post_fragment_shader =
 "    vec4  color1 = texture (tex0, st);"
 "    vec4  color2 = texture (tex1, st);"
 "    vec4  color3 = texture (tex2, st);"
-//"    fragColor = vec4(color1.r, color2.r, color3.r, 1.0);"
-//"   fragColor = vec4(0, color2.r, 0, 1.0);"
-"   fragColor = vec4(color1.r, 0, 0, 1.0);"
+"    fragColor = vec4(color1.r, color2.r, color3.r, 1.0);"
 "}";
 
 // warp
@@ -66,12 +64,12 @@ const char* vsWarp =
 const char* fsWarp =
 "#version 410 \n"
 "in vec2 st;"
-"uniform float w;"
-"uniform float h;"
 "uniform sampler2D tex0;"
 "uniform sampler2D tex1;"
 "uniform sampler2D tex2;"
 "uniform sampler2D texDeform;"
+"uniform float w;"
+"uniform float h;"
 "out vec4 fragColor;"
 "void main () {"
 "   vec4 texc = texture(texDeform, st);"
@@ -79,8 +77,5 @@ const char* fsWarp =
 "   vec4 color1 = texture(tex0, texcc);"
 "   vec4 color2 = texture(tex1, texcc);"
 "   vec4 color3 = texture(tex2, texcc);"
-//"   fragColor = vec4(color1.r, color2.r, color3.r, 1.0);"
-//"   fragColor = vec4(color1.r, 0, 0, 1.0);"
-//"   fragColor = vec4(0, color2.r, 0, 1.0);"
-"   fragColor = vec4(0, 0, color3.r, 1.0);"
+"   fragColor = vec4(color1.r, color2.r, color3.r, 1.0);"
 "}";
