@@ -36,14 +36,21 @@ int main(int argc, char *argv[])
     //
     
     bool b_debug = false;
+    bool b_input = false;
     
     if(argc>1)
     {
-        if (strcmp(argv[1], "debug") == 0)
+        if (strcmp(argv[1], "input") == 0)
+        {
+            b_input = true;
+            std::cout<<"showing input image"<<std::endl;
+        }
+        else if(strcmp(argv[1], "debug") == 0)
         {
             b_debug = true;
             std::cout<<"debugging mode"<<std::endl;
         }
+        
         if(argc>2)
             w = atoi(argv[2]);
         if(argc>3)
@@ -71,7 +78,7 @@ int main(int argc, char *argv[])
 #endif
     
     //
-    if(b_debug)
+    if(b_input)
     {
         window = glfwCreateWindow (w, h, "cylinder map: input", NULL, NULL);
     }
@@ -128,7 +135,7 @@ int main(int argc, char *argv[])
     //
     init_ss_quad();
     
-    if(b_debug)
+    if(b_input)
     {
         //
         postvs = glCreateShader(GL_VERTEX_SHADER);
@@ -256,8 +263,23 @@ int main(int argc, char *argv[])
                     if(stimuli[count]!=stimuli[count-1])
                         viewMatrix = glm::rotate(viewMatrix, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
                 }
-                viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
-                count++;
+                
+                //
+                if(b_debug)
+                {
+                    if(glfwGetKey(window, GLFW_KEY_N))
+                    {
+                        count++;
+                        viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
+                        
+                        std::cout<<"count "<<count<<std::endl;
+                    }
+                }
+                else
+                {
+                    count++;
+                    viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
+                }
             }
             
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Proj"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
@@ -279,7 +301,7 @@ int main(int argc, char *argv[])
         
         
         // 2nd pass: render to screen
-        if(b_debug)
+        if(b_input)
         {
             glBindFramebuffer (GL_FRAMEBUFFER, 0);
             glViewport(0, 0, windowWidth, windowHeight);
