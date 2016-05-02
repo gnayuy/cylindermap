@@ -188,8 +188,8 @@ bool initFramebuffer(int g_gl_width, int g_gl_height, int n, int type, GLuint* t
     glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb[n]);
     
     //
-//    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,  GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-//    glDrawBuffers(4, drawBuffers);
+    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,  GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+    glDrawBuffers(1, drawBuffers + n);
     
     //
     GLenum status = glCheckFramebufferStatus (GL_FRAMEBUFFER);

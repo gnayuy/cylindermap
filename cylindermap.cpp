@@ -128,7 +128,6 @@ int main(int argc, char *argv[])
     //
     init_ss_quad();
     
-    GLuint locTex_Debug[3];
     if(b_debug)
     {
         //
@@ -155,10 +154,6 @@ int main(int argc, char *argv[])
         glAttachShader(postsp, postvs);
         glAttachShader(postsp, postfs);
         glLinkProgram(postsp);
-        
-        locTex_Debug[0] = glGetUniformLocation(postsp, "tex0");
-        locTex_Debug[1] = glGetUniformLocation(postsp, "tex1");
-        locTex_Debug[2] = glGetUniformLocation(postsp, "tex2");
     }
     
     //
@@ -204,7 +199,6 @@ int main(int argc, char *argv[])
     float *deformMat = (float*)p;
     
     initFramebuffer(width, height, 3, 2, &textures[3], (unsigned char*)deformMat);
-    //initTextureRG32F(width, height, &textures[3], deformMat);
     
     
     //
@@ -228,11 +222,6 @@ int main(int argc, char *argv[])
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-    
-    //
-    GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,  GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-    glDrawBuffers(4, drawBuffers);
-
     
     //
     while(!glfwWindowShouldClose(window))
@@ -305,7 +294,6 @@ int main(int argc, char *argv[])
             {
                 glActiveTexture(GL_TEXTURE0 + c);
                 glBindTexture(GL_TEXTURE_2D, textures[c]);
-                glUniform1i(locTex_Debug[c], c);
             }
             
             glBindVertexArray (g_ss_quad_vao);
