@@ -115,9 +115,9 @@ int main(int argc, char *argv[])
     //
     
     //
-    glm::mat4 projectionMatrix = glm::perspective((glm::pi<float>()*2*67)/360.0f, (float)w/(float)h, 0.1f, 100.0f); //glm::ortho(0.0f,(float)w,(float)h,0.0f);
-    glm::mat4 viewMatrix =  glm::lookAt(glm::vec3(0.0f,0.0f,2.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); //glm::mat4(1.0f);
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    glm::mat4 viewMatrix =  glm::lookAt(glm::vec3(0.0f,0.0f,2.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f));
+    glm::mat4 projectionMatrix = glm::perspective((glm::pi<float>()*2*67)/360.0f, (float)w/(float)h, 0.1f, 100.0f);
     
     glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
     
@@ -185,10 +185,16 @@ int main(int argc, char *argv[])
     glLinkProgram(spDeform);
     
     GLuint locPos = glGetAttribLocation(spDeform, "vPos");
-    GLuint locTex0  = glGetUniformLocation(spDeform, "tex0");
-    GLuint locTex1  = glGetUniformLocation(spDeform, "tex1");
     GLuint locWidth  = glGetUniformLocation(spDeform, "w");
     GLuint locHeight  = glGetUniformLocation(spDeform, "h");
+    
+    GLuint locTex[4];
+    
+    locTex[0] = glGetUniformLocation(spDeform, "tex0");
+    locTex[1] = glGetUniformLocation(spDeform, "tex1");
+    locTex[2] = glGetUniformLocation(spDeform, "tex2");
+    locTex[3] = glGetUniformLocation(spDeform, "texDeform");
+    
     
     //
     char *p = loadDeform(deformFile);
@@ -251,13 +257,11 @@ int main(int argc, char *argv[])
                 if(count>1)
                 {
                     if(stimuli[count]!=stimuli[count-1])
-                        viewMatrix = glm::rotate(viewMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
+                        viewMatrix = glm::rotate(viewMatrix, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
                 }
                 viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
                 count++;
             }
-            //mvp = projectionMatrix * viewMatrix * modelMatrix;
-            //glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
             
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Proj"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "View"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
@@ -313,13 +317,12 @@ int main(int argc, char *argv[])
             glUniform1f(locHeight, windowHeight);
             
             //
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textures[0]);
-            glUniform1i(locTex0, 0);
-            
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, textures[3]);
-            glUniform1i(locTex1, 1);
+            for(int c=0; c<4; c++)
+            {
+                glActiveTexture(GL_TEXTURE0+c);
+                glBindTexture(GL_TEXTURE_2D, textures[c]);
+                glUniform1i(locTex[c], c);
+            }
             
             //
             glBindVertexArray(g_ss_quad_vao);

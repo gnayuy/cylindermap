@@ -327,9 +327,6 @@ int initObject(int w, int h)
     glAttachShader(shaderProgram, vs);
     glLinkProgram(shaderProgram);
     
-    //
-    //initFramebuffer(w, h, 0, 1, &textures[nTex], NULL);
-    
     return 0;
 }
 
