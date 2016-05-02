@@ -285,11 +285,11 @@ int initObject(int w, int h)
         -0.3, -0.65, 0.0f
     };
     
-    for(int i=0; i<18; i+=3)
-    {
-        points[i] = 0.5*w*(points[i]+1);
-        points[i+1] = 0.5*h*(points[i+1]+1);
-    }
+//    for(int i=0; i<18; i+=3)
+//    {
+//        points[i] = 0.5*w*(points[i]+1);
+//        points[i+1] = 0.5*h*(points[i+1]+1);
+//    }
     
     //
     glGenBuffers(1, &vbo);

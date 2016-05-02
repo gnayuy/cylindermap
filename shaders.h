@@ -14,9 +14,10 @@ using namespace std;
 const char* vertex_shader =
 "#version 410 \n"
 "in vec3 vp;"
-"uniform mat4 MVP;"
+"uniform mat4 View;"
+"uniform mat4 Proj;"
 "void main () {"
-"	gl_Position = MVP*vec4 (vp, 1.0);"
+"	gl_Position = Proj * View * vec4 (vp, 1.0);"
 "}";
 
 const char* fragment_shader =

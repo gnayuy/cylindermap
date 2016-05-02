@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
     //
     
     //
-    glm::mat4 projectionMatrix = glm::ortho(0.0f,(float)w,(float)h,0.0f);
-    glm::mat4 viewMatrix =  glm::mat4(1.0f);
+    glm::mat4 projectionMatrix = glm::perspective((glm::pi<float>()*2*67)/360.0f, (float)w/(float)h, 0.1f, 100.0f); //glm::ortho(0.0f,(float)w,(float)h,0.0f);
+    glm::mat4 viewMatrix =  glm::lookAt(glm::vec3(0.0f,0.0f,2.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); //glm::mat4(1.0f);
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     
     glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
     //initCheckerboard(windowWidth, windowHeight, 32, 0);
     
     //
-    float xtranslate = -0.1f;
+    float xtranslate = -0.001f;
     int count = 0, n = 300;
     bool *stimuli = stimulation(n);
     
@@ -251,15 +251,16 @@ int main(int argc, char *argv[])
                 if(count>1)
                 {
                     if(stimuli[count]!=stimuli[count-1])
-                        viewMatrix = glm::rotate(viewMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
+                        viewMatrix = glm::rotate(viewMatrix, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
                 }
                 viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
                 count++;
             }
-            mvp = projectionMatrix * viewMatrix * modelMatrix;
-            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+            //mvp = projectionMatrix * viewMatrix * modelMatrix;
+            //glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "MVP"), 1, GL_FALSE, glm::value_ptr(mvp));
             
-            std::cout<<count<<" "<<glm::to_string(mvp*vec4(100, 1000, 0.0, 1.0))<<std::endl;
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Proj"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "View"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
             
             //
             initFramebuffer(w, h, 0, 1, &textures[c], NULL);
