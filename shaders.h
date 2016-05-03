@@ -22,9 +22,10 @@ const char* vertex_shader =
 
 const char* fragment_shader =
 "#version 410 \n"
+"uniform vec4 inColor;"
 "out vec4 fragColor;"
 "void main () {"
-"	fragColor = vec4 (1.0, 0.0, 0.0, 1.0);"
+"	fragColor = inColor;"
 "}";
 
 //

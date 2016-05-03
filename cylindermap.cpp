@@ -223,6 +223,9 @@ int main(int argc, char *argv[])
     int count = 0, n = 300;
     bool *stimuli = stimulation(n);
     
+    glm::vec4 color = glm::vec4(1.0, 0.0, 0.0, 1.0);
+    glm::vec4 colorChannel[3];
+    
 //    for(int i=0; i<n; i++)
 //        printf("%d ", stimuli[i]);
 //    printf("\n");
@@ -258,7 +261,7 @@ int main(int argc, char *argv[])
         // 1st pass: render to a RGB texture
         
         //
-        glUseProgram (shaderProgram);
+        glUseProgram(shaderProgram);
         
         // RGB-CHANNEL
         for(int c=0; c<3; c++)
@@ -278,6 +281,16 @@ int main(int argc, char *argv[])
                     {
                         viewMatrix = glm::rotate(viewMatrix, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
                         //std::cout<<"stimulate ... "<<count<<" "<<c<<std::endl;
+                        //color = glm::vec4(0.5, 0, 0, 1.0);
+                        
+                        if(stimuli[count]==1)
+                        {
+                            color = glm::vec4(0.8, 0, 0, 1.0);
+                        }
+                        else
+                        {
+                            color = glm::vec4(0.9, 0, 0, 1.0);
+                        }
                     }
                 }
                 
@@ -299,10 +312,12 @@ int main(int argc, char *argv[])
                 }
                 
                 viewMatrixColor[c] = viewMatrix;
+                colorChannel[c] = color;
             }
             
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Proj"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "View"), 1, GL_FALSE, glm::value_ptr(viewMatrixColor[c]));
+            glUniform4fv(glGetUniformLocation(shaderProgram, "inColor"), 1, glm::value_ptr(colorChannel[c]));
             
             //
             if(b_DataChanged)
