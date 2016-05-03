@@ -20,7 +20,7 @@ using namespace glm;
 #include "shaders.h"
 
 // framebuffer, renderbuffer for color and depth, texture
-#define MAXTEX 5
+#define MAXTEX 4
 GLuint fb[MAXTEX] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
 GLuint rb[MAXTEX] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
 GLuint textures[MAXTEX] = {std::numeric_limits<GLuint>::max(), std::numeric_limits<GLuint>::max()};
@@ -114,9 +114,15 @@ bool* stimulation(int n)
 bool initTextureRGB(int g_gl_width, int g_gl_height, GLuint* tex, unsigned char *data)
 {
     //
-    glGenTextures (1, tex);
-    glBindTexture (GL_TEXTURE_2D, *tex);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, g_gl_width, g_gl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    if(tex)
+    {
+        glDeleteTextures(1, tex);
+    }
+    
+    //
+    glGenTextures(1, tex);
+    glBindTexture(GL_TEXTURE_2D, *tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g_gl_width, g_gl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -135,9 +141,15 @@ bool initTextureRGB(int g_gl_width, int g_gl_height, GLuint* tex, unsigned char 
 bool initTextureRG32F(int g_gl_width, int g_gl_height, GLuint* tex, float *data)
 {
     //
-    glGenTextures (1, tex);
-    glBindTexture (GL_TEXTURE_2D, *tex);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_RG32F, g_gl_width, g_gl_height, 0, GL_RG, GL_FLOAT, data);
+    if(tex)
+    {
+        glDeleteTextures(1, tex);
+    }
+    
+    //
+    glGenTextures(1, tex);
+    glBindTexture(GL_TEXTURE_2D, *tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, g_gl_width, g_gl_height, 0, GL_RG, GL_FLOAT, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -160,6 +172,12 @@ bool initFramebuffer(int g_gl_width, int g_gl_height, int n, int type, GLuint* t
     {
         printf("Invalid n\n");
         return false;
+    }
+    
+    //
+    if(fb[n])
+    {
+        glDeleteFramebuffers(1, &fb[n]);
     }
     
     //
@@ -408,9 +426,9 @@ int initCheckerboard(int w, int h, int step, int nTex)
 //
 void clear()
 {
-    glDeleteTextures(2, textures);
-    glDeleteFramebuffers(2, fb);
-    glDeleteRenderbuffers(2, rb);
+    glDeleteTextures(4, textures);
+    glDeleteFramebuffers(4, fb);
+    glDeleteRenderbuffers(4, rb);
     glDeleteBuffers(1, &vbo);
     glDeleteVertexArrays(1, &vao);
     

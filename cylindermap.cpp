@@ -126,7 +126,9 @@ int main(int argc, char *argv[])
     glm::mat4 viewMatrix =  glm::lookAt(glm::vec3(0.0f,0.0f,2.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f));
     glm::mat4 projectionMatrix = glm::perspective((glm::pi<float>()*2*67)/360.0f, (float)w/(float)h, 0.1f, 100.0f);
     
-    glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
+    //glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
+    
+    glm::mat4 viewMatrixColor[3];
     
     //
     //---- screen
@@ -221,9 +223,19 @@ int main(int argc, char *argv[])
     int count = 0, n = 300;
     bool *stimuli = stimulation(n);
     
+//    for(int i=0; i<n; i++)
+//        printf("%d ", stimuli[i]);
+//    printf("\n");
+//
+//    int size = w*h*3;
+//    std::vector<GLubyte> pix(size);
+    
     // render
     double lastTime = glfwGetTime();
     int nbFrames = 0;
+    
+    //
+    bool b_DataChanged = false;
     
     //
     glEnable(GL_TEXTURE_2D);
@@ -253,15 +265,20 @@ int main(int argc, char *argv[])
         {
             if(count<n)
             {
+                b_DataChanged = true;
+                
                 // IF
                 // performs the scaling FIRST, and THEN the rotation, and THEN the translation
                 // THEN
                 // TransformedVector = TranslationMatrix * RotationMatrix * ScaleMatrix * OriginalVector;
                 
-                if(count>1)
+                if(count>0)
                 {
                     if(stimuli[count]!=stimuli[count-1])
+                    {
                         viewMatrix = glm::rotate(viewMatrix, glm::radians(30.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // z-axis
+                        //std::cout<<"stimulate ... "<<count<<" "<<c<<std::endl;
+                    }
                 }
                 
                 //
@@ -280,13 +297,18 @@ int main(int argc, char *argv[])
                     count++;
                     viewMatrix = glm::translate(viewMatrix, glm::vec3(xtranslate, 0.0f, 0.0f));
                 }
+                
+                viewMatrixColor[c] = viewMatrix;
             }
             
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "Proj"), 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "View"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "View"), 1, GL_FALSE, glm::value_ptr(viewMatrixColor[c]));
             
             //
-            initFramebuffer(w, h, c, 1, &textures[c], NULL);
+            if(b_DataChanged)
+            {
+                initFramebuffer(w, h, c, 1, &textures[c], NULL);
+            }
             
             glBindFramebuffer (GL_FRAMEBUFFER, fb[c]);
             glViewport(0, 0, windowWidth, windowHeight);
@@ -299,6 +321,7 @@ int main(int argc, char *argv[])
             glDrawArrays (GL_TRIANGLES, 0, 6);
         }
         
+        //std::cout<<count<<std::endl;
         
         // 2nd pass: render to screen
         if(b_input)
@@ -320,6 +343,27 @@ int main(int argc, char *argv[])
             
             glBindVertexArray (g_ss_quad_vao);
             glDrawArrays (GL_TRIANGLES, 0, 6);
+            
+//            glGetTexImage (GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, &pix[0]);
+//            //glTexSubImage2D (GL_TEXTURE_2D,0,0,0,w,h,GL_RGB,GL_UNSIGNED_BYTE,&pix[0]);
+//            
+//            FILE *fp=NULL;
+//            
+//            string fn = "testFrame" + std::to_string(count) + ".raw";
+//            
+//            std::cout<<fn<<std::endl;
+//            
+//            fp = fopen(fn.c_str(), "w");
+//            
+//            if (fp == NULL) {
+//                std::cout<<"Can't open output file %s!\n";
+//                return -1;
+//            }
+//            
+//            for(size_t i=0; i<size; i++)
+//                fprintf(fp, "%d", pix[i]);
+//            
+//            fclose(fp);
         }
         else
         {
