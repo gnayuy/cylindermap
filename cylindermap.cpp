@@ -78,6 +78,14 @@ int main(int argc, char *argv[])
 #endif
     
     //
+    int monitorCount;
+    GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+    printf("You have %d connected monitors\n", monitorCount);
+    
+    GLFWmonitor* primeMonitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(primeMonitor);
+    
+    //
     if(b_input)
     {
         window = glfwCreateWindow (w, h, "cylinder map: input", NULL, NULL);
@@ -85,6 +93,8 @@ int main(int argc, char *argv[])
     else
     {
         window = glfwCreateWindow (width, height, "cylinder map", NULL, NULL);
+        //window = glfwCreateWindow(mode->width, mode->height, "cylinder map", primeMonitor, NULL); // full screen
+        //window = glfwCreateWindow(mode->width, mode->height, "cylinder map", monitors[1], NULL);
     }
     if (!window) {
         fprintf (stderr, "ERROR: could not open window with GLFW3\n");
@@ -93,6 +103,8 @@ int main(int argc, char *argv[])
         return -1;
     }
     glfwMakeContextCurrent (window);
+    glfwSetWindowSizeCallback(window, winresize_callback);
+    glfwSetMonitorCallback(monitor_callback);
     
     //
     int windowWidth = w;
@@ -257,6 +269,12 @@ int main(int argc, char *argv[])
             lastTime += 1.0;
         }
         
+        //
+        if(fullscreen)
+        {
+            glfwSetWindowSize(window, winWidth, winHeight);
+            glfwSetWindowPos(window, 0, 0);
+        }
 
         // 1st pass: render to a RGB texture
         
@@ -320,7 +338,8 @@ int main(int argc, char *argv[])
             glUniform4fv(glGetUniformLocation(shaderProgram, "inColor"), 1, glm::value_ptr(colorChannel[c]));
             
             //
-            if(b_DataChanged)
+            //if(b_DataChanged)
+            if(count<4)
             {
                 initFramebuffer(w, h, c, 1, &textures[c], NULL);
             }

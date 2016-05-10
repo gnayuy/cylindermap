@@ -1,7 +1,9 @@
 
 //
+#ifdef __APPLE__
 #include <glbinding/gl/gl.h>
 #include <glbinding/Binding.h>
+#endif
 
 //
 #include <GL/glew.h>
@@ -39,6 +41,12 @@ GLuint shaderProgram=0;
 GLuint vsDeform = 0, fsDeform = 0;
 GLuint spDeform = 0;
 
+//
+int winWidth = 608, winHeight = 604;
+
+//
+bool fullscreen = false;
+
 // check for shader compiler errors
 bool check_shader_compile_status(GLuint obj) {
     GLint status;
@@ -52,6 +60,30 @@ bool check_shader_compile_status(GLuint obj) {
         return false;
     }
     return true;
+}
+
+// resize windows
+static void winresize_callback(GLFWwindow* window, int x, int y)
+{
+    glfwGetWindowSize(window, &x, &y);
+
+    winWidth = x;
+    winHeight = y;
+    
+    printf("windows: [%d, %d]\n", winWidth, winHeight);
+}
+
+// change monitor
+void monitor_callback(GLFWmonitor* monitor, int event)
+{
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    
+    winWidth = mode->width;
+    winHeight = mode->height;
+    
+    fullscreen = true;
+    
+    printf("windows: [%d, %d]\n", winWidth, winHeight);
 }
 
 // load deformation matrix
@@ -121,6 +153,8 @@ bool initTextureRGB(int g_gl_width, int g_gl_height, GLuint* tex, unsigned char 
     
     //
     glGenTextures(1, tex);
+    
+    //
     glBindTexture(GL_TEXTURE_2D, *tex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g_gl_width, g_gl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
